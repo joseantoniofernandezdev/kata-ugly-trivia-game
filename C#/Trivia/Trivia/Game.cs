@@ -17,6 +17,22 @@ namespace Trivia
         private int _currentPlayer;
         private bool _isGettingOutOfPenaltyBox;
 
+        private static readonly Category[] CategoriesByPlace =
+        {
+            Category.Pop,
+            Category.Science,
+            Category.Sports,
+            Category.Rock,
+            Category.Pop,
+            Category.Science,
+            Category.Sports,
+            Category.Rock,
+            Category.Pop,
+            Category.Science,
+            Category.Sports,
+            Category.Rock
+        };
+
         public Game(IGameOutput output)
         {
             _output = output;
@@ -125,16 +141,7 @@ namespace Trivia
 
         private Category CurrentCategory()
         {
-            if (CurrentPlayer.Place == 0) return Category.Pop;
-            if (CurrentPlayer.Place == 4) return Category.Pop;
-            if (CurrentPlayer.Place == 8) return Category.Pop;
-            if (CurrentPlayer.Place == 1) return Category.Science;
-            if (CurrentPlayer.Place == 5) return Category.Science;
-            if (CurrentPlayer.Place == 9) return Category.Science;
-            if (CurrentPlayer.Place == 2) return Category.Sports;
-            if (CurrentPlayer.Place == 6) return Category.Sports;
-            if (CurrentPlayer.Place == 10) return Category.Sports;
-            return Category.Rock;
+            return CategoriesByPlace[CurrentPlayer.Place];
         }
 
         private static string CreatePopQuestion(int index) => "Pop Question " + index;
