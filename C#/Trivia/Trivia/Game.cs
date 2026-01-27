@@ -45,9 +45,8 @@ namespace Trivia
             Enumerable.Range(0, 50).ToList().ForEach(i =>
             {
                 _questions.Keys.ToList().ForEach(category =>
-                {
-                    _questions[category].AddLast($"{category} Question {i}");
-                });
+                    _questions[category].AddLast($"{category} Question {i}")
+                );
             });
         }
 
@@ -93,50 +92,27 @@ namespace Trivia
         public void Roll(int roll)
         {
             var playerName = CurrentPlayer.Name;
-            var isInPenalty = CurrentPlayer.IsInPenaltyBox;
+            _output.WriteLine($"{playerName} is the current player");
+            _output.WriteLine($"They have rolled a {roll}");
 
-            var currentPlayerMessage = $"{playerName} is the current player";
-            var rollMessage = $"They have rolled a {roll}";
+            bool moved = CurrentPlayer.TakeTurn(roll, _isGettingOutOfPenaltyBox);
 
-            _output.WriteLine(currentPlayerMessage);
-            _output.WriteLine(rollMessage);
-
-            if (isInPenalty)
+            if (CurrentPlayer.IsInPenaltyBox && !moved)
             {
-                if (roll % 2 != 0)
-                {
-                    _isGettingOutOfPenaltyBox = true;
-
-                    var gettingOutMessage = $"{playerName} is getting out of the penalty box";
-                    _output.WriteLine(gettingOutMessage);
-
-                    MoveCurrentPlayer(roll);
-
-                    var locationMessage = $"{playerName}'s new location is {CurrentPlayer.Place}";
-                    var categoryMessage = $"The category is {CurrentCategory()}";
-
-                    _output.WriteLine(locationMessage);
-                    _output.WriteLine(categoryMessage);
-                    AskQuestion();
-                }
-                else
-                {
-                    _isGettingOutOfPenaltyBox = false;
-                    var stayInPenaltyMessage = $"{playerName} is not getting out of the penalty box";
-                    _output.WriteLine(stayInPenaltyMessage);
-                }
+                _output.WriteLine($"{playerName} is not getting out of the penalty box");
+                _isGettingOutOfPenaltyBox = false;
+                return;
             }
-            else
+
+            if (CurrentPlayer.IsInPenaltyBox && moved)
             {
-                MoveCurrentPlayer(roll);
-
-                var locationMessage = $"{playerName}'s new location is {CurrentPlayer.Place}";
-                var categoryMessage = $"The category is {CurrentCategory()}";
-
-                _output.WriteLine(locationMessage);
-                _output.WriteLine(categoryMessage);
-                AskQuestion();
+                _output.WriteLine($"{playerName} is getting out of the penalty box");
+                _isGettingOutOfPenaltyBox = true;
             }
+
+            _output.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
+            _output.WriteLine($"The category is {CurrentCategory()}");
+            AskQuestion();
         }
 
         private void AskQuestion()
@@ -160,13 +136,6 @@ namespace Trivia
             _currentPlayer++;
             if (_currentPlayer == _players.Count)
                 _currentPlayer = 0;
-        }
-
-        private void MoveCurrentPlayer(int roll)
-        {
-            CurrentPlayer.Place += roll;
-            if (CurrentPlayer.Place > 11)
-                CurrentPlayer.Place -= 12;
         }
     }
 }
