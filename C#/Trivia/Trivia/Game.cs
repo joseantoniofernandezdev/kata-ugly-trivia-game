@@ -92,38 +92,49 @@ namespace Trivia
 
         public void Roll(int roll)
         {
-            _output.WriteLine(_players[_currentPlayer] + " is the current player");
-            _output.WriteLine("They have rolled a " + roll);
+            var playerName = CurrentPlayer.Name;
+            var isInPenalty = CurrentPlayer.IsInPenaltyBox;
 
-            if (CurrentPlayer.IsInPenaltyBox)
+            var currentPlayerMessage = $"{playerName} is the current player";
+            var rollMessage = $"They have rolled a {roll}";
+
+            _output.WriteLine(currentPlayerMessage);
+            _output.WriteLine(rollMessage);
+
+            if (isInPenalty)
             {
                 if (roll % 2 != 0)
                 {
                     _isGettingOutOfPenaltyBox = true;
 
-                    _output.WriteLine(_players[_currentPlayer] + " is getting out of the penalty box");
+                    var gettingOutMessage = $"{playerName} is getting out of the penalty box";
+                    _output.WriteLine(gettingOutMessage);
+
                     MoveCurrentPlayer(roll);
 
-                    _output.WriteLine(_players[_currentPlayer]
-                            + "'s new location is "
-                            + CurrentPlayer.Place);
-                    _output.WriteLine("The category is " + CurrentCategory());
+                    var locationMessage = $"{playerName}'s new location is {CurrentPlayer.Place}";
+                    var categoryMessage = $"The category is {CurrentCategory()}";
+
+                    _output.WriteLine(locationMessage);
+                    _output.WriteLine(categoryMessage);
                     AskQuestion();
                 }
                 else
                 {
-                    _output.WriteLine(_players[_currentPlayer] + " is not getting out of the penalty box");
                     _isGettingOutOfPenaltyBox = false;
+                    var stayInPenaltyMessage = $"{playerName} is not getting out of the penalty box";
+                    _output.WriteLine(stayInPenaltyMessage);
                 }
             }
             else
             {
                 MoveCurrentPlayer(roll);
 
-                _output.WriteLine(_players[_currentPlayer]
-                        + "'s new location is "
-                        + CurrentPlayer.Place);
-                _output.WriteLine("The category is " + CurrentCategory());
+                var locationMessage = $"{playerName}'s new location is {CurrentPlayer.Place}";
+                var categoryMessage = $"The category is {CurrentCategory()}";
+
+                _output.WriteLine(locationMessage);
+                _output.WriteLine(categoryMessage);
                 AskQuestion();
             }
         }
