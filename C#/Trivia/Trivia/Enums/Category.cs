@@ -1,4 +1,4 @@
-﻿namespace Trivia;
+﻿namespace Trivia.Enums;
 
 public enum Category
 {

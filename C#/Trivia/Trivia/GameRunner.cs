@@ -1,4 +1,5 @@
 ﻿using System;
+using Trivia.Adapters;
 
 namespace Trivia
 {
@@ -8,7 +9,7 @@ namespace Trivia
 
         public static void Main(string[] args)
         {
-            var aGame = new Game();
+            var aGame = new Game(new ConsoleGameOutput());
             aGame.Add("Chet");
             aGame.Add("Pat");
             aGame.Add("Sue");

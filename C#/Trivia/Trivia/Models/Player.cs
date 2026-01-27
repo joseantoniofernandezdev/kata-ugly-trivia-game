@@ -1,4 +1,4 @@
-﻿namespace Trivia;
+﻿namespace Trivia.Models;
 
 public class Player
 {

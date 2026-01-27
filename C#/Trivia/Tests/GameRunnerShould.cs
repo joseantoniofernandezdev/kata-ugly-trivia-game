@@ -3,6 +3,7 @@ using ApprovalTests.Reporters;
 using System;
 using System.IO;
 using Trivia;
+using Trivia.Adapters;
 using Xunit;
 
 namespace Tests;
@@ -18,7 +19,7 @@ public class GameRunnerShould
         {
             Console.SetOut(sw);
 
-            var aGame = new Game();
+            var aGame = new Game(new ConsoleGameOutput());
             aGame.Add("Chet");
             aGame.Add("Pat");
             aGame.Add("Sue");
