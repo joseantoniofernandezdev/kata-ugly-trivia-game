@@ -19,4 +19,30 @@ public class Player
     {
         return Name;
     }
+
+    public void Move(int roll)
+    {
+        Place += roll;
+        if (Place > 11) Place -= 12;
+    }
+
+    public void SendToPenaltyBox()
+    {
+        IsInPenaltyBox = true;
+    }
+
+    public void GetOutOfPenaltyBox()
+    {
+        IsInPenaltyBox = false;
+    }
+
+    public void AddCoin()
+    {
+        Purse++;
+    }
+
+    public bool HasWon()
+    {
+        return Purse >= 6;
+    }
 }

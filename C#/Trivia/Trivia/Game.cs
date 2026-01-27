@@ -46,60 +46,32 @@ namespace Trivia
 
         public bool WasCorrectlyAnswered()
         {
-            if (CurrentPlayer.IsInPenaltyBox)
+            if (CurrentPlayer.IsInPenaltyBox && !_isGettingOutOfPenaltyBox)
             {
-                if (_isGettingOutOfPenaltyBox)
-                {
-                    _output.WriteLine("Answer was correct!!!!");
-                    CurrentPlayer.Purse++;
-                    _output.WriteLine(_players[_currentPlayer]
-                            + " now has "
-                            + CurrentPlayer.Purse
-                            + " Gold Coins.");
-
-                    var winner = DidPlayerWin();
-
-                    AdvanceToNextPlayer();
-
-                    return winner;
-                }
-                else
-                {
-                    AdvanceToNextPlayer();
-                    return true;
-                }
-            }
-            else
-            {
-                _output.WriteLine("Answer was corrent!!!!");
-                CurrentPlayer.Purse++;
-                _output.WriteLine(_players[_currentPlayer]
-                        + " now has "
-                        + CurrentPlayer.Purse
-                        + " Gold Coins.");
-
-                var winner = DidPlayerWin();
-
                 AdvanceToNextPlayer();
-
-                return winner;
+                return true;
             }
+
+            _output.WriteLine("Answer was corrent!!!!");
+            CurrentPlayer.AddCoin();
+            _output.WriteLine($"{CurrentPlayer} now has {CurrentPlayer.Purse} Gold Coins.");
+
+            var winner = !CurrentPlayer.HasWon();
+
+            AdvanceToNextPlayer();
+
+            return winner;
         }
 
         public bool WrongAnswer()
         {
             _output.WriteLine("Question was incorrectly answered");
             _output.WriteLine(_players[_currentPlayer] + " was sent to the penalty box");
-            CurrentPlayer.IsInPenaltyBox = true;
+            CurrentPlayer.SendToPenaltyBox();
 
             AdvanceToNextPlayer();
 
             return true;
-        }
-
-        private int HowManyPlayers()
-        {
-            return _players.Count;
         }
 
         public void Roll(int roll)
@@ -163,11 +135,6 @@ namespace Trivia
             if (CurrentPlayer.Place == 6) return Category.Sports;
             if (CurrentPlayer.Place == 10) return Category.Sports;
             return Category.Rock;
-        }
-
-        private bool DidPlayerWin()
-        {
-            return !(CurrentPlayer.Purse == 6);
         }
 
         private static string CreatePopQuestion(int index) => "Pop Question " + index;
