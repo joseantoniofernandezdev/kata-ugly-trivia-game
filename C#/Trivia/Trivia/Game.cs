@@ -42,13 +42,13 @@ namespace Trivia
             _questions[Category.Sports] = new LinkedList<string>();
             _questions[Category.Rock] = new LinkedList<string>();
 
-            for (var i = 0; i < 50; i++)
+            Enumerable.Range(0, 50).ToList().ForEach(i =>
             {
-                _questions[Category.Pop].AddLast(CreatePopQuestion(i));
-                _questions[Category.Science].AddLast(CreateScienceQuestion(i));
-                _questions[Category.Sports].AddLast(CreateSportsQuestion(i));
-                _questions[Category.Rock].AddLast(CreateRockQuestion(i));
-            }
+                _questions.Keys.ToList().ForEach(category =>
+                {
+                    _questions[category].AddLast($"{category} Question {i}");
+                });
+            });
         }
 
         public bool Add(string playerName)
@@ -82,7 +82,7 @@ namespace Trivia
         public bool WrongAnswer()
         {
             _output.WriteLine("Question was incorrectly answered");
-            _output.WriteLine(_players[_currentPlayer] + " was sent to the penalty box");
+            _output.WriteLine(CurrentPlayer + " was sent to the penalty box");
             CurrentPlayer.SendToPenaltyBox();
 
             AdvanceToNextPlayer();
@@ -154,14 +154,6 @@ namespace Trivia
         {
             return CategoriesByPlace[CurrentPlayer.Place];
         }
-
-        private static string CreatePopQuestion(int index) => "Pop Question " + index;
-
-        private static string CreateScienceQuestion(int index) => "Science Question " + index;
-
-        private static string CreateSportsQuestion(int index) => "Sports Question " + index;
-
-        private static string CreateRockQuestion(int index) => "Rock Question " + index;
 
         private void AdvanceToNextPlayer()
         {
