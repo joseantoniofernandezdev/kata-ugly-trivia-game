@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Trivia.Enums;
 using Trivia.Interfaces;
 using Trivia.Models;
@@ -9,13 +8,11 @@ namespace Trivia
     public class Game
     {
         private readonly IGameOutput _output;
-
         private readonly List<Player> _players = new();
-        private readonly Dictionary<Category, LinkedList<string>> _questions = new();
         private Player CurrentPlayer => _players[_currentPlayer];
-
         private int _currentPlayer;
         private bool _isGettingOutOfPenaltyBox;
+        private readonly QuestionDeck _questionDeck;
 
         private static readonly Category[] CategoriesByPlace =
         {
@@ -36,18 +33,7 @@ namespace Trivia
         public Game(IGameOutput output)
         {
             _output = output;
-
-            _questions[Category.Pop] = new LinkedList<string>();
-            _questions[Category.Science] = new LinkedList<string>();
-            _questions[Category.Sports] = new LinkedList<string>();
-            _questions[Category.Rock] = new LinkedList<string>();
-
-            Enumerable.Range(0, 50).ToList().ForEach(i =>
-            {
-                _questions.Keys.ToList().ForEach(category =>
-                    _questions[category].AddLast($"{category} Question {i}")
-                );
-            });
+            _questionDeck = new QuestionDeck();
         }
 
         public bool Add(string playerName)
@@ -118,12 +104,8 @@ namespace Trivia
         private void AskQuestion()
         {
             var category = CurrentCategory();
-
-            var questions = _questions[category];
-
-            _output.WriteLine(questions.First());
-
-            questions.RemoveFirst();
+            var question = _questionDeck.NextQuestion(category);
+            _output.WriteLine(question);
         }
 
         private Category CurrentCategory()
