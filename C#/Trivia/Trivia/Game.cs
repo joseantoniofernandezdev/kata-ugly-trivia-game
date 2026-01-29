@@ -10,22 +10,7 @@ namespace Trivia
         private readonly PlayerQueue _players;
         private readonly QuestionDeck _questionDeck;
         private Player CurrentPlayer => _players.Current;
-
-        private static readonly Category[] CategoriesByPlace =
-        {
-            Category.Pop,
-            Category.Science,
-            Category.Sports,
-            Category.Rock,
-            Category.Pop,
-            Category.Science,
-            Category.Sports,
-            Category.Rock,
-            Category.Pop,
-            Category.Science,
-            Category.Sports,
-            Category.Rock
-        };
+        private static readonly Category[] Categories = { Category.Pop, Category.Science, Category.Sports, Category.Rock };
 
         public Game(IGameOutput output)
         {
@@ -68,28 +53,22 @@ namespace Trivia
 
         public bool Roll(int roll)
         {
-            var playerName = CurrentPlayer.Name;
+            LogPlayerTurn(roll);
 
-            _output.WriteLine($"{playerName} is the current player");
-            _output.WriteLine($"They have rolled a {roll}");
-
-            if (CurrentPlayer.IsInPenaltyBox)
+            if (CurrentPlayer.IsInPenaltyBox && roll % 2 == 0)
             {
-                if (roll % 2 == 0)
-                {
-                    _output.WriteLine($"{playerName} is not getting out of the penalty box");
-                    return false;
-                }
-
-                _output.WriteLine($"{playerName} is getting out of the penalty box");
+                LogPenaltyBox(false);
+                return false;
             }
 
-            CurrentPlayer.Move(roll);
+            if (CurrentPlayer.IsInPenaltyBox)
+                LogPenaltyBox(true);
 
-            _output.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
-            _output.WriteLine($"The category is {CurrentCategory()}");
+            CurrentPlayer.Move(roll);
+            LogPlayerPosition();
 
             AskQuestion();
+
             return true;
         }
 
@@ -102,12 +81,34 @@ namespace Trivia
 
         private Category CurrentCategory()
         {
-            return CategoriesByPlace[CurrentPlayer.Place];
+            return Categories[CurrentPlayer.Place % Categories.Length];
         }
 
         private void AdvanceToNextPlayer()
         {
             _players.Advance();
+        }
+
+        private void LogPlayerTurn(int roll)
+        {
+            var playerName = CurrentPlayer.Name;
+            _output.WriteLine($"{playerName} is the current player");
+            _output.WriteLine($"They have rolled a {roll}");
+        }
+
+        private void LogPenaltyBox(bool gotOut)
+        {
+            var playerName = CurrentPlayer.Name;
+            _output.WriteLine(gotOut
+                ? $"{playerName} is getting out of the penalty box"
+                : $"{playerName} is not getting out of the penalty box");
+        }
+
+        private void LogPlayerPosition()
+        {
+            var playerName = CurrentPlayer.Name;
+            _output.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
+            _output.WriteLine($"The category is {CurrentCategory()}");
         }
     }
 }
