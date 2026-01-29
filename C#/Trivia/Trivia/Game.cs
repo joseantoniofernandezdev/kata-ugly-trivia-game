@@ -11,7 +11,6 @@ namespace Trivia
         private readonly List<Player> _players = new();
         private Player CurrentPlayer => _players[_currentPlayer];
         private int _currentPlayer;
-        private bool _isGettingOutOfPenaltyBox;
         private readonly QuestionDeck _questionDeck;
 
         private static readonly Category[] CategoriesByPlace =
@@ -47,18 +46,11 @@ namespace Trivia
 
         public bool WasCorrectlyAnswered()
         {
-            if (CurrentPlayer.IsInPenaltyBox && !_isGettingOutOfPenaltyBox)
-            {
-                AdvanceToNextPlayer();
-                return true;
-            }
-
             _output.WriteLine("Answer was corrent!!!!");
             CurrentPlayer.AddCoin();
             _output.WriteLine($"{CurrentPlayer} now has {CurrentPlayer.Purse} Gold Coins.");
 
             var winner = !CurrentPlayer.HasWon();
-
             AdvanceToNextPlayer();
 
             return winner;
@@ -75,30 +67,31 @@ namespace Trivia
             return true;
         }
 
-        public void Roll(int roll)
+        public bool Roll(int roll)
         {
             var playerName = CurrentPlayer.Name;
+
             _output.WriteLine($"{playerName} is the current player");
             _output.WriteLine($"They have rolled a {roll}");
 
-            bool moved = CurrentPlayer.TakeTurn(roll, _isGettingOutOfPenaltyBox);
-
-            if (CurrentPlayer.IsInPenaltyBox && !moved)
+            if (CurrentPlayer.IsInPenaltyBox)
             {
-                _output.WriteLine($"{playerName} is not getting out of the penalty box");
-                _isGettingOutOfPenaltyBox = false;
-                return;
-            }
+                if (roll % 2 == 0)
+                {
+                    _output.WriteLine($"{playerName} is not getting out of the penalty box");
+                    return false;
+                }
 
-            if (CurrentPlayer.IsInPenaltyBox && moved)
-            {
                 _output.WriteLine($"{playerName} is getting out of the penalty box");
-                _isGettingOutOfPenaltyBox = true;
             }
+
+            CurrentPlayer.Move(roll);
 
             _output.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
             _output.WriteLine($"The category is {CurrentCategory()}");
+
             AskQuestion();
+            return true;
         }
 
         private void AskQuestion()
