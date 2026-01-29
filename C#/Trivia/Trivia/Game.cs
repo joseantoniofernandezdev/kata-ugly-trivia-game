@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Trivia.Enums;
+﻿using Trivia.Enums;
 using Trivia.Interfaces;
 using Trivia.Models;
 
@@ -8,10 +7,9 @@ namespace Trivia
     public class Game
     {
         private readonly IGameOutput _output;
-        private readonly List<Player> _players = new();
-        private Player CurrentPlayer => _players[_currentPlayer];
-        private int _currentPlayer;
+        private readonly PlayerQueue _players;
         private readonly QuestionDeck _questionDeck;
+        private Player CurrentPlayer => _players.Current;
 
         private static readonly Category[] CategoriesByPlace =
         {
@@ -33,6 +31,7 @@ namespace Trivia
         {
             _output = output;
             _questionDeck = new QuestionDeck();
+            _players = new PlayerQueue();
         }
 
         public bool Add(string playerName)
@@ -108,9 +107,7 @@ namespace Trivia
 
         private void AdvanceToNextPlayer()
         {
-            _currentPlayer++;
-            if (_currentPlayer == _players.Count)
-                _currentPlayer = 0;
+            _players.Advance();
         }
     }
 }
