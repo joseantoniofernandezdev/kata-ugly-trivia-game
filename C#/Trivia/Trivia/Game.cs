@@ -7,16 +7,18 @@ namespace Trivia
     public class Game
     {
         private readonly IGameOutput _output;
+        private readonly IPenaltyRule _penaltyRule;
         private readonly PlayerQueue _players;
         private readonly QuestionDeck _questionDeck;
         private Player CurrentPlayer => _players.Current;
         private static readonly Category[] Categories = { Category.Pop, Category.Science, Category.Sports, Category.Rock };
 
-        public Game(IGameOutput output)
+        public Game(IGameOutput output, IPenaltyRule penaltyRule)
         {
             _output = output;
             _questionDeck = new QuestionDeck();
             _players = new PlayerQueue();
+            _penaltyRule = penaltyRule;
         }
 
         public bool Add(string playerName)
@@ -55,18 +57,16 @@ namespace Trivia
         {
             LogPlayerTurn(roll);
 
-            if (CurrentPlayer.IsInPenaltyBox && roll % 2 == 0)
-            {
-                LogPenaltyBox(false);
-                return false;
-            }
+            bool canAnswer = _penaltyRule.CanAnswer(CurrentPlayer, roll);
 
             if (CurrentPlayer.IsInPenaltyBox)
-                LogPenaltyBox(true);
+                LogPenaltyBox(canAnswer);
+
+            if (!canAnswer)
+                return false;
 
             CurrentPlayer.Move(roll);
             LogPlayerPosition();
-
             AskQuestion();
 
             return true;

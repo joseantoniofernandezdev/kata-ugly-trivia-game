@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using Trivia;
 using Trivia.Adapters;
+using Trivia.Rules;
 using Xunit;
 
 namespace Tests;
@@ -19,7 +20,7 @@ public class GameRunnerShould
         {
             Console.SetOut(sw);
 
-            var aGame = new Game(new ConsoleGameOutput());
+            var aGame = new Game(new ConsoleGameOutput(), new PenaltyRule());
             aGame.Add("Chet");
             aGame.Add("Pat");
             aGame.Add("Sue");
