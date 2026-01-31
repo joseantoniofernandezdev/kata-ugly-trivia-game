@@ -7,10 +7,10 @@ using Trivia.Adapters;
 using Trivia.Rules;
 using Xunit;
 
-namespace Tests;
+namespace Tests.Approval;
 
 [UseReporter(typeof(DiffReporter))]
-public class GameRunnerShould
+public class GameRunnerApprovalTest
 {
     [Fact]
     public void Check_game_runner_console_output()

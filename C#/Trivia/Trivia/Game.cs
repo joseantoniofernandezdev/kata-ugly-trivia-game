@@ -6,7 +6,7 @@ namespace Trivia
 {
     public class Game
     {
-        private readonly IGameOutput _output;
+        private readonly IGameOutput _gameOutput;
         private readonly IPenaltyRule _penaltyRule;
         private readonly PlayerQueue _players;
         private readonly QuestionDeck _questionDeck;
@@ -15,7 +15,7 @@ namespace Trivia
 
         public Game(IGameOutput output, IPenaltyRule penaltyRule)
         {
-            _output = output;
+            _gameOutput = output;
             _questionDeck = new QuestionDeck();
             _players = new PlayerQueue();
             _penaltyRule = penaltyRule;
@@ -25,18 +25,23 @@ namespace Trivia
         {
             _players.Add(new Player(playerName));
 
-            _output.WriteLine(playerName + " was added");
-            _output.WriteLine("They are player number " + _players.Count);
+            _gameOutput.WriteLine(playerName + " was added");
+
+            _gameOutput.WriteLine("They are player number " + _players.Count);
+
             return true;
         }
 
         public bool WasCorrectlyAnswered()
         {
-            _output.WriteLine("Answer was corrent!!!!");
+            _gameOutput.WriteLine("Answer was corrent!!!!");
+
             CurrentPlayer.AddCoin();
-            _output.WriteLine($"{CurrentPlayer} now has {CurrentPlayer.Purse} Gold Coins.");
+
+            _gameOutput.WriteLine($"{CurrentPlayer} now has {CurrentPlayer.Purse} Gold Coins.");
 
             var winner = !CurrentPlayer.HasWon();
+
             AdvanceToNextPlayer();
 
             return winner;
@@ -44,8 +49,10 @@ namespace Trivia
 
         public bool WrongAnswer()
         {
-            _output.WriteLine("Question was incorrectly answered");
-            _output.WriteLine(CurrentPlayer + " was sent to the penalty box");
+            _gameOutput.WriteLine("Question was incorrectly answered");
+
+            _gameOutput.WriteLine(CurrentPlayer + " was sent to the penalty box");
+
             CurrentPlayer.SendToPenaltyBox();
 
             AdvanceToNextPlayer();
@@ -66,7 +73,9 @@ namespace Trivia
                 return false;
 
             CurrentPlayer.Move(roll);
+
             LogPlayerPosition();
+
             AskQuestion();
 
             return true;
@@ -75,31 +84,30 @@ namespace Trivia
         private void AskQuestion()
         {
             var category = CurrentCategory();
+
             var question = _questionDeck.NextQuestion(category);
-            _output.WriteLine(question);
+
+            _gameOutput.WriteLine(question);
         }
 
-        private Category CurrentCategory()
-        {
-            return Categories[CurrentPlayer.Place % Categories.Length];
-        }
+        private Category CurrentCategory() => Categories[CurrentPlayer.Place % Categories.Length];
 
-        private void AdvanceToNextPlayer()
-        {
-            _players.Advance();
-        }
+        private void AdvanceToNextPlayer() => _players.Advance();
 
         private void LogPlayerTurn(int roll)
         {
             var playerName = CurrentPlayer.Name;
-            _output.WriteLine($"{playerName} is the current player");
-            _output.WriteLine($"They have rolled a {roll}");
+
+            _gameOutput.WriteLine($"{playerName} is the current player");
+
+            _gameOutput.WriteLine($"They have rolled a {roll}");
         }
 
         private void LogPenaltyBox(bool gotOut)
         {
             var playerName = CurrentPlayer.Name;
-            _output.WriteLine(gotOut
+
+            _gameOutput.WriteLine(gotOut
                 ? $"{playerName} is getting out of the penalty box"
                 : $"{playerName} is not getting out of the penalty box");
         }
@@ -107,8 +115,10 @@ namespace Trivia
         private void LogPlayerPosition()
         {
             var playerName = CurrentPlayer.Name;
-            _output.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
-            _output.WriteLine($"The category is {CurrentCategory()}");
+
+            _gameOutput.WriteLine($"{playerName}'s new location is {CurrentPlayer.Place}");
+
+            _gameOutput.WriteLine($"The category is {CurrentCategory()}");
         }
     }
 }
